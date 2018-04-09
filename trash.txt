@@ -1,0 +1,375 @@
+3. Client
+#include<stdio.h>
+#include<string.h>
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<netinet/in.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+int main(int argc)
+{
+int cd, sd, ad;
+char buff[1024];
+struct sockaddr_in cliaddr,servaddr;
+bzero(&servaddr,sizeof(servaddr));
+servaddr.sin_family=AF_INET;
+servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
+servaddr.sin_port=htons(1999);
+sd=socket(AF_INET,SOCK_STREAM,0);
+cd=connect(sd,(struct
+sockaddr*)&servaddr,sizeof(servaddr));
+while(1)
+{
+printf("Enter the message:\n");
+fgets(buff,100,stdin);
+send(sd,buff,sizeof(buff)+1,0);
+printf("Data sent\n");
+printf("%s", buff);
+}
+return 0;
+}
+3 server
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<stdio.h>
+#include<netinet/in.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+ #include<string.h>
+int main(int argc, char *argv[])
+{
+int bd, sd, ad;
+char buff[1024];
+struct sockaddr_in cliaddr, servaddr;
+socklen_t clilen;
+clilen = sizeof(cliaddr);
+bzero(&servaddr, sizeof(servaddr));
+servaddr.sin_family = AF_INET;
+servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+servaddr.sin_port = htons(1999);
+sd = socket(AF_INET,SOCK_STREAM,0);
+bd = bind(sd,(struct
+sockaddr*)&servaddr,sizeof(servaddr));
+listen(sd, 5);
+printf("Server is running..\n");
+ad = accept(sd,(struct sockaddr*)&cliaddr,&clilen);
+while(1)
+{
+bzero(&buff,sizeof(buff));
+recv(ad,buff,sizeof(buff),0);
+printf("Message received is %s\n", buff);
+}
+return 0;
+}
+4 client
+#include<stdio.h> #include<sys/types.h> #include<sys/socket.h> #include<netinet/in.h> #include<netdb.h> #include<arpa/inet.h> #include<string.h>
+int main(int argc,char *argv[]) {
+int cd,sd,ad;
+char buff[1024];
+struct sockaddr_in clientaddr,serveraddr; socklen_t clilen;
+
+bzero(&serveraddr,sizeof(serveraddr)); serveraddr.sin_family=AF_INET; serveraddr.sin_addr.s_addr=htonl(INADDR_ANY); serveraddr.sin_port=htons(1999); sd=socket(AF_INET,SOCK_DGRAM,0);
+while(1)
+{
+bzero(&buff,sizeof(buff));
+printf("enter the message\n");
+fgets(buff,100,stdin);
+sendto(sd,buff,sizeof(buff),0,(struct sockaddr*)&serveraddr,sizeof(serveraddr)); printf("data sent\n");
+}
+}
+4 server
+#include<stdio.h>
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+#include<string.h>
+int main(int argc,char *argv[])
+{
+int bd,sd,ad;
+char buff[1024];
+struct sockaddr_in clientaddr,serveraddr;
+socklen_t clilen;
+clilen=sizeof(clientaddr);
+bzero(&serveraddr,sizeof(serveraddr));
+serveraddr.sin_family=AF_INET;
+serveraddr.sin_addr.s_addr=htonl(INADDR_ANY);
+serveraddr.sin_port=htons(1999);
+sd=socket(AF_INET,SOCK_DGRAM,0);
+bd=bind(sd,(struct
+sockaddr*)&serveraddr,sizeof(serveraddr));
+printf("server is running.....\n");
+while(1)
+{
+bzero(&buff,sizeof(buff));
+recvfrom(sd,buff,sizeof(buff),0,(struct
+ 
+ sockaddr*)&clientaddr,&clilen);
+printf("message received is %s\n",buff);
+}
+}
+5 client
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <unistd.h>
+int main(int argc, char* argv[])
+{
+    int s = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in sadd;
+    sadd.sin_port=htons(1999);
+    sadd.sin_family = AF_INET;
+    sadd.sin_addr.s_addr = htonl(INADDR_ANY);
+    sadd.sin_port = htons(1999);
+    connect(s, (struct sockaddr*) &sadd,
+sizeof(sadd));
+    char b[1024];
+    recv(s, b, sizeof(b), 0);
+    printf("Time: %s\n", b);
+    close(s);
+}
+5 server
+#include <stdio.h>
+#include <time.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+int main(int argc, char* argv[])
+{
+    int s = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in sadd;
+    sadd.sin_family = AF_INET;
+    sadd.sin_addr.s_addr = htonl(INADDR_ANY);
+
+     sadd.sin_port = htons(1999);
+    socklen_t slen = sizeof(sadd);
+    bind(s, (struct sockaddr*) &sadd, slen);
+    printf("Server connected!\n");
+    listen(s,5);
+    struct sockaddr_in cadd;
+    socklen_t clen = sizeof(cadd);
+    int a = accept(s, (struct sockaddr*) &cadd,
+&clen);
+    printf("Client connected!\n");
+    char b[1024];
+    time_t t = time(NULL);
+    snprintf(b, sizeof(b), "%s", ctime(&t));
+    send(a, b, sizeof(b), 0);
+    close(s);
+}
+6 client
+#include<stdio.h>
+#include<string.h>
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<netinet/in.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+int main(int argc)
+{
+    int cd, sd, ad;
+    struct sockaddr_in cliaddr,servaddr;
+    bzero(&servaddr,sizeof(servaddr));
+    servaddr.sin_family=AF_INET;
+    servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
+    servaddr.sin_port=htons(1999);
+    sd=socket(AF_INET,SOCK_STREAM,0);
+    cd=connect(sd,(struct
+sockaddr*)&servaddr,sizeof(servaddr));
+while(1) {
+        char b1[1024];
+
+         char b2[1024];
+        recv(sd, b1, sizeof(b1), 0);
+        printf("Server: %s\n", b1);
+        printf("Enter message\n");
+        fgets(b2, sizeof(b2), stdin);
+        send(sd, b2, sizeof(b2), 0);
+}
+return 0; }
+6 Server
+#include<sys/types.h>
+#include<sys/socket.h>
+#include<stdio.h>
+#include<netinet/in.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+#include<string.h>
+int main(int argc, char *argv[])
+{
+    int bd, sd, a;
+    struct sockaddr_in cliaddr, servaddr;
+    socklen_t clilen;
+    clilen = sizeof(cliaddr);
+    bzero(&servaddr, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;
+    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    servaddr.sin_port = htons(1999);
+    sd = socket(AF_INET,SOCK_STREAM,0);
+    bd = bind(sd,(struct
+sockaddr*)&servaddr,sizeof(servaddr));
+    listen(sd, 5);
+    printf("Server is running..\n");
+    a = accept(sd,(struct
+sockaddr*)&cliaddr,&clilen);
+while(1) {
+        printf("Enter message\n");
+        char b1[1024];
+        fgets(b1, sizeof(b1), stdin);
+        send(a, b1, sizeof(b1), 0);
+
+         printf("Msg sent\n");
+        char b2[1024];
+        recv(a, b2, sizeof(b2), 0);
+        printf("Client: %s", b2);
+}
+return 0; }
+7 client
+ #include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<netinet/in.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+int main(int argc) {
+    int cd,sd,ad;
+    char buffs[1024],buffr[1024];
+    struct sockaddr_in cliaddr,servaddr;
+    bzero(&servaddr,sizeof(servaddr));
+    servaddr.sin_family=AF_INET;
+    servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
+    servaddr.sin_port = htons(1999);
+    sd = socket(AF_INET,SOCK_STREAM,0);
+    cd=connect(sd,(struct
+sockaddr*)&servaddr,sizeof(servaddr));
+    int pid = fork();
+    if(pid > 0) {
+         while(1) {
+             bzero(&buffs,sizeof(buffs));
+             fgets(buffs,100,stdin);
+             send(sd,buffs,sizeof(buffs),0);
+} }else {
+         while(1) {
+             bzero(&buffr,sizeof(buffr));
+             int n = recv(sd,buffr,sizeof(buffr),0);
+
+if(n > 0)
+         printf(" server: %s", buffr);
+    }
+}
+}
+7 server
+ #include<sys/types.h>
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<netdb.h>
+#include<stdlib.h>
+#include<arpa/inet.h>
+#include<string.h>
+#include<stdio.h>
+int main() {
+    int bd,sd,ad;
+    char buffs[1024],buffr[1024];
+    struct sockaddr_in cliaddr,servaddr;
+    socklen_t clilen;
+    clilen=sizeof(cliaddr);
+    bzero(&servaddr,sizeof(servaddr));
+    servaddr.sin_family=AF_INET;
+    servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
+    servaddr.sin_port=htons(1999);
+    sd=socket(AF_INET,SOCK_STREAM,0);
+    bd=bind(sd,(struct
+sockaddr*)&servaddr,sizeof(servaddr));
+    listen(sd,5);
+    printf("Server is runningů.\n");
+    ad=accept(sd,(struct sockaddr*)&cliaddr,&clilen);
+    int pid = fork();
+    if(pid >0) {
+         while(1) {
+             bzero(&buffr,sizeof(buffr));
+             int n = recv(ad,buffr,sizeof(buffr),0);
+             if(n > 0)
+  
+          printf("Client :%s", buffr);
+    }
+}else {
+    while(1) {
+} }
+}
+8 client
+bzero(&buffs,sizeof(buffs));
+fgets(buffs,100,stdin);
+send(ad,buffs,sizeof(buffs),0);
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<netinet/in.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+int main(int argc) {
+    int cd,sd,ad;
+    char b1[1024],b2[1024];
+    struct sockaddr_in cliaddr,servaddr;
+    bzero(&servaddr,sizeof(servaddr));
+    servaddr.sin_family=AF_INET;
+    servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
+    servaddr.sin_port = htons(1999);
+    sd = socket(AF_INET,SOCK_STREAM,0);
+    cd=connect(sd,(struct
+sockaddr*)&servaddr,sizeof(servaddr));
+while(1) {
+         printf("Enter file name: ");
+         scanf("%s",b1);
+         send(sd,b1,strlen(b1)+1,0);
+         recv(sd,b2,sizeof(b2),0);
+
+          printf("File: %s",b2);
+    }
+}
+8 server
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<sys/socket.h>
+#include<sys/types.h>
+#include<unistd.h>
+#include<netinet/in.h>
+#include<netdb.h>
+#include<arpa/inet.h>
+int main() {
+    int bd,sd,ad;
+    char b1[1024],b2[1024];
+    struct sockaddr_in cliaddr,servaddr;
+    socklen_t clilen;
+    clilen=sizeof(cliaddr);
+    bzero(&servaddr,sizeof(servaddr));
+    servaddr.sin_family=AF_INET;
+    servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
+    servaddr.sin_port=htons(1999);
+    sd=socket(AF_INET,SOCK_STREAM,0);
+    bd=bind(sd,(struct
+sockaddr*)&servaddr,sizeof(servaddr));
+    listen(sd,5);
+    printf("Server is runningů.\n");
+    ad=accept(sd,(struct sockaddr*)&cliaddr,&clilen);
+    while(1)
+    {
+         recv(ad,b1,sizeof(b1),0);
+         FILE * f = fopen(b1,"r");
+         fread(b2,sizeof(b2),1,f);
+         fclose(f);
+         send(ad,b2,sizeof(b2),0);
+
+printf("File Sent\n");
+}
