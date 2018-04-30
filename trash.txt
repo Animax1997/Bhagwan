@@ -63,12 +63,17 @@ printf("Message received is %s\n", buff);
 return 0;
 }
 4 client
-#include<stdio.h> #include<sys/types.h> #include<sys/socket.h> #include<netinet/in.h> #include<netdb.h> #include<arpa/inet.h> #include<string.h>
+#include<stdio.h> 
+#include<sys/types.h> 
+#include<sys/socket.h> 
+#include<netinet/in.h> 
+#include<netdb.h> 
+#include<arpa/inet.h> 
+#include<string.h>
 int main(int argc,char *argv[]) {
 int cd,sd,ad;
 char buff[1024];
 struct sockaddr_in clientaddr,serveraddr; socklen_t clilen;
-
 bzero(&serveraddr,sizeof(serveraddr)); serveraddr.sin_family=AF_INET; serveraddr.sin_addr.s_addr=htonl(INADDR_ANY); serveraddr.sin_port=htons(1999); sd=socket(AF_INET,SOCK_DGRAM,0);
 while(1)
 {
@@ -78,6 +83,7 @@ fgets(buff,100,stdin);
 sendto(sd,buff,sizeof(buff),0,(struct sockaddr*)&serveraddr,sizeof(serveraddr)); printf("data sent\n");
 }
 }
+
 4 server
 #include<stdio.h>
 #include<sys/types.h>
@@ -347,7 +353,8 @@ while(1) {
 #include<netinet/in.h>
 #include<netdb.h>
 #include<arpa/inet.h>
-int main() {
+int main() 
+{
     int bd,sd,ad;
     char b1[1024],b2[1024];
     struct sockaddr_in cliaddr,servaddr;
@@ -358,8 +365,7 @@ int main() {
     servaddr.sin_addr.s_addr=htonl(INADDR_ANY);
     servaddr.sin_port=htons(1999);
     sd=socket(AF_INET,SOCK_STREAM,0);
-    bd=bind(sd,(struct
-sockaddr*)&servaddr,sizeof(servaddr));
+    bd=bind(sd,(struct sockaddr*)&servaddr,sizeof(servaddr));
     listen(sd,5);
     printf("Server is runningů.\n");
     ad=accept(sd,(struct sockaddr*)&cliaddr,&clilen);
